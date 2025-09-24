@@ -56,14 +56,11 @@ class Preprocessor:
 
     def merge(self) -> None:
         """
-        merge (val, test) directories into train
+        merge (valid, test) directories into train
         """
         for base_dir in self.directories:
             input_path = Path(base_dir)
-            for subset in ["val", "test"]:
-                if subset == "val":
-                    if not os.path.exists(input_path/subset):
-                        subset = "valid"
+            for subset in ["valid", "test"]:
                 image_paths = input_path.glob(f"{subset}/images/*.jpg")
                 for image_path in image_paths:
                     new_image_path = input_path/"train/images"/image_path.name
@@ -81,15 +78,15 @@ class Preprocessor:
 
     def split(self) -> None:
         """
-        split directories into (train(90%), val(10%))
+        split directories into (train(90%), valid(10%))
         """
         for base_dir in self.directories:
             input_path = Path(base_dir)
             image_paths = sorted((input_path/"train").glob("images/*.jpg"))
-            train_image_paths, val_image_paths = train_test_split(image_paths, test_size=0.1, random_state=42)
+            train_image_paths, valid_image_paths = train_test_split(image_paths, test_size=0.1, random_state=42)
             print(f"train file num: {len(train_image_paths)}")
-            print(f"val file num: {len(val_image_paths)}")
-            for subset, subset_image_paths in [["val", val_image_paths]]:
+            print(f"valid file num: {len(valid_image_paths)}")
+            for subset, subset_image_paths in [["valid", valid_image_paths]]:
                 os.makedirs(input_path/subset/"images", exist_ok=True)
                 os.makedirs(input_path/subset/"labels", exist_ok=True)
 
@@ -118,7 +115,7 @@ class Preprocessor:
         """
         hash_dict = {}
         for base_dir in self.directories:
-            for subset in ["train", "val", "test"]:
+            for subset in ["train", "valid", "test"]:
                 images_path = Path(base_dir) / subset / "images"
 
                 if not os.path.exists(images_path):
@@ -179,7 +176,7 @@ class Preprocessor:
         os.makedirs(output_path/"annotations", exist_ok=True)
         for base_dir in self.directories:
             input_path = Path(base_dir)
-            for subset in ['train', 'val']:
+            for subset in ['train', 'valid']:
                 os.makedirs(output_path/subset, exist_ok=True)
                 images = []
                 annotations = []
