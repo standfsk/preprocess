@@ -57,11 +57,11 @@ class Preprocessor:
 
     def merge(self):
         """
-        merge (val, test) directories into train
+        merge (valid, test) directories into train
         """
         for base_dir in self.directories:
             input_path = Path(base_dir)
-            for subset in ["val", "test"]:
+            for subset in ["valid", "test"]:
                 image_paths = sorted((input_path/subset).glob("*.jpg"))
                 for index, image_path in enumerate(image_paths):
                     new_image_path = input_path/"train"/image_path.name
@@ -79,17 +79,17 @@ class Preprocessor:
 
     def split(self):
         """
-        split directories into (train(80%), val(10%), test(10%))
+        split directories into (train(80%), valid(10%), test(10%))
         """
         for base_dir in self.directories:
             input_path = Path(base_dir)
             image_paths = sorted((input_path/"train").glob("*.jpg"))
-            train_image_paths, val_image_paths = train_test_split(image_paths, test_size=0.2, random_state=42)
-            val_image_paths, test_image_paths = train_test_split(val_image_paths, test_size=0.5, random_state=42)
+            train_image_paths, valid_image_paths = train_test_split(image_paths, test_size=0.2, random_state=42)
+            valid_image_paths, test_image_paths = train_test_split(valid_image_paths, test_size=0.5, random_state=42)
             print(f"train file num: {len(train_image_paths)}")
-            print(f"val file num: {len(val_image_paths)}")
+            print(f"valid file num: {len(valid_image_paths)}")
             print(f"test file num: {len(test_image_paths)}")
-            for subset, image_paths in [["val", val_image_paths], ["test", test_image_paths]]:
+            for subset, image_paths in [["valid", valid_image_paths], ["test", test_image_paths]]:
                 os.makedirs(input_path/subset, exist_ok=True)
 
                 for index, image_path in enumerate(image_paths):
@@ -146,7 +146,7 @@ class Preprocessor:
         """
         for base_dir in self.directories:
             input_path = Path(base_dir)
-            for subset in ["train", "val", "test"]:
+            for subset in ["train", "valid", "test"]:
                 image_paths = sorted((input_path/subset).glob("*.jpg"))
                 for image_path in tqdm(image_paths, total=len(image_paths), desc="Resizing"):
                     image = cv2.imread(str(image_path))
@@ -174,7 +174,7 @@ class Preprocessor:
 
         for base_dir in self.directories:
             input_path = Path(base_dir)
-            for subset in ["train", "val", "test", "*"]:
+            for subset in ["train", "valid", "test", "*"]:
                 images_num = 0
                 labels_num = []
                 images_heights = []
